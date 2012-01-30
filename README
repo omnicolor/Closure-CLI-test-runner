@@ -1,0 +1,9 @@
+This script and ant build file enable running Google Closure unit tests from the command line.
+
+Expected directory structure:
+    /build.xml
+    /scripts/{your javascript files}
+    /tests/{your javascript tests}Test.js
+    /tests/testRunner.js
+
+Run 'ant test-js' to run the unit tests.
