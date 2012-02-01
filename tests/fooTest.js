@@ -14,3 +14,7 @@ function testFooTwoNegative() {
 function testFooStrings() {
     assertEquals('a5', add('a', 5));
 }
+
+function testFailure() {
+    assertEquals(10, add('5', 5));
+}
