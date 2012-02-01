@@ -84,21 +84,22 @@ runner.execute();
 
 window.console.info(logged + '\n');
 
-if (!runner.isSuccess()) {
-    window.console.log = originalLog;
-    var failure;
-    var i = 0;
-
-    window.console.log('There were ' + (test.result_.messages.length - 2) +
-        ' failures.');
-    while (test.result_.messages.length) {
-        failure = test.result_.messages.shift();
-        if (goog.isString(failure)) {
-            continue;
-        }
-        i = i + 1;
-        window.console.log(i + '. ' + failure.message);
-        window.console.log('   ' + failure.error.message);
-    }
-    phantom.exit(1);
+if (runner.isSuccess()) {
+    phantom.exit(0);
 }
+window.console.log = originalLog;
+var failure;
+var i = 0;
+
+window.console.log('There were ' + (test.result_.messages.length - 2) +
+    ' failures.');
+while (test.result_.messages.length) {
+    failure = test.result_.messages.shift();
+    if (goog.isString(failure)) {
+        continue;
+    }
+    i = i + 1;
+    window.console.log(i + '. ' + failure.message);
+    window.console.log('   ' + failure.error.message);
+}
+phantom.exit(1);

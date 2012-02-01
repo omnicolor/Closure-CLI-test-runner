@@ -20,16 +20,19 @@
             <arg value="--output_file=tests.js" />
             <arg value="--output_mode=compiled" />
         </exec>
-        <concat destfile="tests.js" append="yes">
-            phantom.exit();
-        </concat>
         <delete file="tests-concat.js" />
-        <exec executable="${phantomjs}" outputproperty="test-results">
+        <exec executable="${phantomjs}" outputproperty="test-results"
+                resultproperty="result-code">
             <arg value="tests.js" />
         </exec>
         <delete file="tests.js" />
         <echo message="Running javascript unit tests" />
         <echo message="${test-results}" />
+        <fail message="at least one test failed">
+            <condition>
+                <isfailure code="${result-code}" />
+            </condition>
+        </fail>
     </target>
 
 
