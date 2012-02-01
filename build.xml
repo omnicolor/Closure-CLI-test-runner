@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Closure-CLI-test-runner" default="test-js" basedir=".">
+    <property name="compiler" value="/tmp/compiler.jar" />
+    <property name="library" value="/tmp/closure-library" />
+    <property name="phantomjs" value="/opt/phantomjs/bin/phantomjs" />
+
+    <target name="test-js"
+            depends="closure-compiler-download,closure-library-download">
+        <echo message="Running javascript unit tests" />
+        <concat destfile="tests-concat.js">
+            <fileset dir="tests" includes="*Test.js" />
+        </concat>
+        <exec executable="${library}/bin/calcdeps.py">
+            <arg value="--compiler_flag=--compilation_level=WHITESPACE_ONLY" />
+            <arg value="--compiler_jar=${compiler}" />
+            <arg value="--input=scripts/foo.js" />
+            <arg value="--input=tests-concat.js" />
+            <arg value="--input=tests/testRunner.js" />
+            <arg value="--path=${library}" />
+            <arg value="--output_file=tests.js" />
+            <arg value="--output_mode=compiled" />
+        </exec>
+        <concat destfile="tests.js" append="yes">
+            phantom.exit();
+        </concat>
+        <delete file="tests-concat.js" />
+        <exec executable="${phantomjs}" outputproperty="test-results">
+            <arg value="tests.js" />
+        </exec>
+        <delete file="tests.js" />
+        <echo message="Running javascript unit tests" />
+        <echo message="${test-results}" />
+    </target>
+
+
+    <available property="closure-compiler.exists" file="${compiler}" />
+    <target name="closure-compiler-download"
+            unless="closure-compiler.exists"
+            description="Download and unpack Closure Compiler">
+        <echo message="Downloading Closure compiler" />
+        <exec executable="wget">
+            <arg value="--no-clobber" />
+            <arg value="--no-verbose" />
+            <arg value="--output-document=/tmp/closure.zip" />
+            <arg value="http://closure-compiler.googlecode.com/files/compiler-latest.zip" />
+        </exec>
+        <unzip
+            src="/tmp/closure.zip"
+            dest="/tmp">
+            <patternset>
+                <include name="**/compiler.jar" />
+            </patternset>
+        </unzip>
+        <delete file="/tmp/closure.zip" />
+    </target>
+
+    <available file="${library}" property="library.exists" />
+    <target name="closure-library-download"
+            description="Pulls down Google Closure Library and unpacks it."
+            unless="library.exists">
+        <echo message="Downloading Closure library" />
+        <exec executable="svn">
+            <arg value="checkout" />
+            <arg value="-q" />
+            <arg value="http://closure-library.googlecode.com/svn/trunk/closure/" />
+            <arg value="${library}" />
+        </exec>
+    </target>
+
+</project>
