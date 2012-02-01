@@ -18,7 +18,9 @@ var logged = '';
  * @param {!string} str Indicator to add to the logger.
  */
 var logger = function(str) {
-    logged = logged + str;
+    // The test framework runs tests in reverse order, so add the result to the
+    // beginning of the logged string.
+    logged = str + logged;
     if (60 < logged.length) {
         // Add a line break before this gets out of hand.
         window.console.info(logged);
