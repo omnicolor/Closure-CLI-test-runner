@@ -45,7 +45,7 @@
             <arg value="--no-clobber" />
             <arg value="--no-verbose" />
             <arg value="--output-document=/tmp/closure.zip" />
-            <arg value="http://closure-compiler.googlecode.com/files/compiler-latest.zip" />
+            <arg value="http://dl.google.com/closure-compiler/compiler-latest.zip" />
         </exec>
         <unzip
             src="/tmp/closure.zip"
