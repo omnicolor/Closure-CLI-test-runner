@@ -61,7 +61,7 @@ test.doSuccess = function(test) {
 test.doError = function(test, opt_e) {
     var message = test.name + ' : FAILED';
     this.saveMessage({message: message, error: opt_e});
-    logger('F');
+    logger('\033[41;1;37mF\033[0m');
 }
 
 /**
@@ -79,27 +79,45 @@ test.autoDiscoverTests();
  * @type {!goog.testing.TestRunner}
  */
 var runner = new goog.testing.TestRunner();
+
+window.console.info('\nRunning Javascript unit tests\n');
+
 runner.initialize(test);
 runner.execute();
 
 window.console.info(logged + '\n');
 
-if (runner.isSuccess()) {
-    phantom.exit(0);
-}
-window.console.log = originalLog;
-var failure;
-var i = 0;
+var failureCount = test.result_.messages.length - 2;
 
-window.console.log('There were ' + (test.result_.messages.length - 2) +
-    ' failures.');
-while (test.result_.messages.length) {
-    failure = test.result_.messages.shift();
-    if (goog.isString(failure)) {
-        continue;
+// Clean up after ourselves.
+window.console.log = originalLog;
+
+if (!failureCount) {
+    window.console.info('\033[7;32mOK (' + test.result_.successCount
+        + ' tests)\033[0m');
+    phantom.exit(0);
+} else { // Note that phantom.exit doesn't actually exit, hence the else.
+    var failure;
+    var i = 0;
+
+    if (1 === failureCount) {
+        window.console.log('There was 1 failure:\n');
+    } else {
+        window.console.log('There were ' + (failureCount) + ' failures:\n');
     }
-    i = i + 1;
-    window.console.log(i + '. ' + failure.message);
-    window.console.log('   ' + failure.error.message);
+
+    while (test.result_.messages.length) {
+        failure = test.result_.messages.shift();
+        if (goog.isString(failure)) {
+            continue;
+        }
+        i = i + 1;
+        window.console.log(i + '. ' + failure.message);
+        window.console.log('   ' + failure.error.message);
+    }
+
+    window.console.log('\n\033[41;1;37mFAILURES!\033[0m\n\033[41;1;37mTests: '
+            + (test.result_.successCount + failureCount) + ', Failures: '
+            + failureCount + '\033[0m\n');
+    phantom.exit(1);
 }
-phantom.exit(1);

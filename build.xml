@@ -26,9 +26,8 @@
             <arg value="tests.js" />
         </exec>
         <delete file="tests.js" />
-        <echo message="Running javascript unit tests" />
         <echo message="${test-results}" />
-        <fail message="at least one test failed">
+        <fail>
             <condition>
                 <isfailure code="${result-code}" />
             </condition>
